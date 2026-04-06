@@ -1,0 +1,142 @@
+/*
+ * Copyright (C) 2026 piko <https://github.com/crimera/piko>
+ *
+ * This file is part of piko.
+ *
+ * Any modifications, derivatives, or substantial rewrites of this file
+ * must retain this copyright notice and the piko attribution 
+ * in the source code and version control history.
+ */
+
+package app.crimera.patches.twitter.entity
+
+import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.methodCall
+import app.morphe.patcher.opcode
+import app.morphe.patcher.string
+import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.Opcode
+
+private const val ENTITY_TWEET_DEFINING_CLASS = "Lapp/morphe/extension/twitter/entity/Tweet"
+
+// --------------- Tweet
+internal object TweetObjectFingerprint : Fingerprint(
+    filters =
+        listOf(
+            string("https://x.com/%1\$s/status/%2\$d"),
+        ),
+)
+
+internal object TweetUsernameFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getTweetUsername",
+)
+
+internal object TweetProfileNameFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getTweetProfileName",
+)
+
+internal object TweetUserIdFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getTweetUserId",
+)
+
+internal object TweetMediaFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getMedias",
+)
+
+internal object TweetInfoFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getTweetInfo",
+)
+
+internal object TweetLongTextFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getLongText",
+)
+
+internal object TweetShortTextFingerprint : Fingerprint(
+    definingClass = ENTITY_TWEET_DEFINING_CLASS,
+    name = "getShortText",
+)
+
+internal object TweetActionsHandlerFingerprint: Fingerprint(
+   strings = listOf("content_author")
+)
+
+internal class TweetOriginalNameFingerprint(definingClass: String) : Fingerprint(
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
+    returnType = "Ljava/lang/String;",
+    parameters = emptyList(),
+    definingClass = definingClass,
+    filters = listOf(
+        methodCall(definingClass = "this", returnType = "Ljava/lang/String;"),
+        methodCall(definingClass = "this", returnType = "Ljava/lang/String;"),
+        opcode(Opcode.RETURN_OBJECT)
+    ),
+)
+
+internal object TweetMediaEntityClassFingerprint : Fingerprint(
+    strings = listOf("EntityList{mEntities="),
+)
+
+internal object LongTweetObjectFingerprint : Fingerprint(
+    strings =
+        listOf(
+            "NoteTweet(id=",
+            ", text=",
+        ),
+)
+
+internal object QuotedViewSetAccessibilityFingerprint : Fingerprint(
+    definingClass = "Lcom/twitter/tweetview/core/QuoteView;",
+    name = "setAccessibility",
+)
+
+// --------------- Extended Media Entity
+internal object MediaOptionSheetMediaListVideoDownloaderImplDownloadMethodFingerprint : Fingerprint(
+    returnType = "Z",
+    strings = listOf("mediaEntity"),
+    custom = { _, classDef ->
+        classDef.startsWith("Lcom/twitter/tweetview/core/ui/mediaoptionssheet/")
+    },
+)
+
+internal object ExtMediaHighResVideoFingerprint : Fingerprint(
+    definingClass = "Lapp/morphe/extension/twitter/entity/ExtMediaEntities",
+    name = "getHighResVideo",
+)
+
+internal object ExtMediaGetImageFingerprint : Fingerprint(
+    definingClass = "Lapp/morphe/extension/twitter/entity/ExtMediaEntities",
+    name = "getImageUrl",
+)
+
+internal object ExtMediaGetImageMethodFinder : Fingerprint(
+    definingClass = "Lcom/twitter/model/json/unifiedcard/JsonAppStoreData;",
+    strings =
+        listOf(
+            "type",
+            "id",
+        ),
+)
+
+// --------------- TweetInfo
+internal object TweetInfoObjectFingerprint : Fingerprint(
+    strings =
+        listOf(
+            "flags",
+            "lang",
+            "supplemental_language",
+        ),
+    custom = { methodDef, classDef ->
+        methodDef.parameters.size == 2 && classDef.contains("/tdbh/")
+    },
+)
+
+internal object TweetLangFingerprint : Fingerprint(
+    definingClass = "Lapp/morphe/extension/twitter/entity/TweetInfo;",
+    name = "getLang",
+)
