@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2026 piko <https://github.com/crimera/piko>
+ *
+ * See the included NOTICE file for GPLv3 §7(b) terms that apply to this code.
+*/
+
+
+package app.morphe.extension.instagram.patches.story;
+
+import static app.morphe.extension.instagram.utils.IgStr.str;
+
+import java.util.ArrayList;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+
+import app.morphe.extension.instagram.utils.Pref;
+import app.morphe.extension.instagram.settings.SettingsStatus;
+import app.morphe.extension.instagram.entity.MediaData;
+import app.morphe.extension.shared.Logger;
+import app.morphe.extension.instagram.patches.download.DownloadUtils;
+import app.morphe.extension.crimera.ObjectBrowser;
+
+import com.instagram.common.session.UserSession;
+import instagram.features.stories.fragment.ReelViewerFragment;
+
+public class StoryButton {
+    private static boolean VIEW_STORY_MENTIONS;
+    private static boolean ENABLE_DOWNLOAD;
+    private static boolean DEBUG;
+
+    static{
+        VIEW_STORY_MENTIONS = Pref.viewStoryMentions() && SettingsStatus.viewStoryMentions;
+        ENABLE_DOWNLOAD = Pref.enableDownload() && SettingsStatus.downloadMedia;
+        DEBUG = Pref.pikoDebug();
+    }
+
+    public static ArrayList addButtons(ArrayList buttonList){
+        if(DEBUG){
+            buttonList.add(str("piko_debug"));
+        }
+        if(VIEW_STORY_MENTIONS){
+            buttonList.add(str("piko_view_story_mentions"));
+        }
+        if(ENABLE_DOWNLOAD){
+            buttonList.add(str("piko_download_options"));
+        }
+        if(Pref.downloadWithExternalDownloader()){
+            buttonList.add(str("piko_download_with_external_downloader"));
+        }
+
+        return buttonList;
+    }
+
+    public static boolean storyDialogAction(CharSequence buttonText, Activity activity, UserSession session,
+                                            Object mediaObject, Object reel,
+                                            DialogInterface.OnDismissListener onDismiss, Object fragment, String moduleName) {
+        boolean mentions = buttonText.equals(str("piko_view_story_mentions"));
+        if (!mentions && !buttonText.equals(str("piko_download_options"))
+                && !buttonText.equals(str("piko_category_download_media"))) {
+            return false;
+        }
+
+        DialogInterface.OnDismissListener close = onDismiss;
+        if (fragment instanceof ReelViewerFragment) {
+            ReelViewerFragment viewer = (ReelViewerFragment) fragment;
+            viewer.pikoStoryDialogOpen = true;
+            pauseViewer(viewer, "context_switch");
+            close = dialog -> {
+                viewer.pikoStoryDialogOpen = false;
+                if (onDismiss != null) onDismiss.onDismiss(dialog);
+                else resumeViewer(viewer, "resume", false);
+            };
+        }
+        if (mentions) {
+            ViewStoryMentionsPatch.viewMentions(activity, session, mediaObject, moduleName, close);
+        } else {
+            DownloadUtils.showStoryDownloadOptions(activity, session, mediaObject, reel, close);
+        }
+        return true;
+    }
+
+    // The patch supplies the viewer's native playback methods.
+    private static void pauseViewer(ReelViewerFragment viewer, String reason) {}
+    private static void resumeViewer(ReelViewerFragment viewer, String reason, boolean force) {}
+
+    public static boolean storyButtonAction(CharSequence buttonText, Context ctx, Object mediaObject){
+        try {
+            if (buttonText.equals(str("piko_debug"))) {
+                ObjectBrowser.browseObject(ctx, new MediaData(mediaObject));
+                return true;
+            } else if (buttonText.equals(str("piko_download_with_external_downloader"))) {
+                DownloadUtils.externalDownloader(mediaObject,0);
+
+                return true;
+            }
+        } catch (Exception ex) {
+            Logger.printException(() -> "Failed storyButtonAction", ex);
+        }
+        return false;
+    }
+}
