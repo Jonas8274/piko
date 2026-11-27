@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <group android:translateX="28" android:translateY="28">
+        <path
+            android:strokeColor="@color/piko_settings_shortcut_gradient"
+            android:strokeWidth="2"
+            android:strokeLineJoin="round"
+            android:pathData="M8.03,5.12
+                Q8.33,5.27 8.73,4.27 L9.57,2.27 Q9.83,1.47 10.67,1.47 L13.33,1.47 Q14.17,1.47 14.43,2.27 L15.27,4.27 Q15.67,5.27 15.97,5.12
+                Q16,5.46 17.06,5.3 L19.21,5.03 Q20.04,4.86 20.46,5.58 L21.79,7.89 Q22.21,8.61 21.65,9.24 L20.33,10.96 Q19.66,11.81 19.94,12.00
+                Q19.66,12.19 20.33,13.04 L21.65,14.76 Q22.21,15.39 21.79,16.11 L20.46,18.42 Q20.04,19.14 19.21,18.97 L17.06,18.7 Q16,18.54 15.97,18.88
+                Q15.67,18.73 15.27,19.73 L14.43,21.73 Q14.17,22.53 13.33,22.53 L10.67,22.53 Q9.83,22.53 9.57,21.73 L8.73,19.73 Q8.33,18.73 8.03,18.88
+                Q8,18.54 6.94,18.7 L4.79,18.97 Q3.96,19.14 3.54,18.42 L2.21,16.11 Q1.79,15.39 2.35,14.76 L3.67,13.04 Q4.34,12.19 4.06,12.00
+                Q4.34,11.81 3.67,10.96 L2.35,9.24 Q1.79,8.61 2.21,7.89 L3.54,5.58 Q3.96,4.86 4.79,5.03 L6.94,5.3 Q8,5.46 8.03,5.12 Z
+                M16,12 A4,4 0 1,1 8,12 A4,4 0 1,1 16,12 Z" />
+    </group>
+</vector>
